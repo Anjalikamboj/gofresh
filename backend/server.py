@@ -57,6 +57,9 @@ def serialize_doc(doc):
         for key, value in doc.items():
             if key == "_id":
                 result["id"] = str(value)
+            elif key == "hashed_password":
+                # Never return hashed password
+                continue
             elif isinstance(value, ObjectId):
                 result[key] = str(value)
             elif isinstance(value, datetime):
@@ -69,6 +72,83 @@ def serialize_doc(doc):
                 result[key] = value
         return result
     return doc
+
+
+# ========== AUTH ENDPOINTS ==========
+
+@app.post("/api/auth/register", response_model=dict)
+async def register(user: UserCreate):
+    """Register a new user"""
+    db = get_database()
+    
+    # Check if user already exists
+    existing_user = db.users.find_one({"email": user.email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Create new user
+    hashed_password = get_password_hash(user.password)
+    user_dict = {
+        "email": user.email,
+        "full_name": user.full_name,
+        "hashed_password": hashed_password,
+        "role": "user",
+        "created_at": datetime.now()
+    }
+    
+    result = db.users.insert_one(user_dict)
+    
+    # Create access token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email, "user_id": str(result.inserted_id), "role": "user"},
+        expires_delta=access_token_expires
+    )
+    
+    created_user = db.users.find_one({"_id": result.inserted_id})
+    
+    return {
+        "user": serialize_doc(created_user),
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
+@app.post("/api/auth/login", response_model=dict)
+async def login(credentials: UserLogin):
+    """Login user"""
+    db = get_database()
+    
+    # Find user
+    user = db.users.find_one({"email": credentials.email})
+    if not user or not verify_password(credentials.password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect email or password"
+        )
+    
+    # Create access token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["email"], "user_id": str(user["_id"]), "role": user.get("role", "user")},
+        expires_delta=access_token_expires
+    )
+    
+    return {
+        "user": serialize_doc(user),
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
+
+
+@app.get("/api/auth/me", response_model=dict)
+async def get_me(current_user: dict = Depends(get_current_user)):
+    """Get current user info"""
+    db = get_database()
+    user = db.users.find_one({"_id": ObjectId(current_user["user_id"])})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return serialize_doc(user)
 
 
 # ========== PRODUCT ENDPOINTS ==========
