@@ -106,6 +106,20 @@ class API {
     if (!response.ok) throw new Error('Failed to trigger scheduler');
     return response.json();
   }
+
+  // Profile
+  async updateProfile(data) {
+    const response = await fetch(`${BACKEND_URL}/api/auth/profile`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to update profile');
+    }
+    return response.json();
+  }
 }
 
 export default new API();

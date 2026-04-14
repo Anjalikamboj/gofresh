@@ -13,6 +13,7 @@ import AdminPage from './pages/AdminPage';
 import CreateSubscriptionPage from './pages/CreateSubscriptionPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Protected Route
 function ProtectedRoute({ children }) {
@@ -99,10 +100,14 @@ function Navigation() {
             
             {isAuthenticated ? (
               <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border">
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-secondary rounded-lg">
+                <Link
+                  to="/profile"
+                  className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-secondary rounded-lg hover:bg-secondary/80 transition-colors"
+                  data-testid="profile-link"
+                >
                   <User className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm font-medium">{user?.full_name || user?.email}</span>
-                </div>
+                </Link>
                 <button
                   onClick={logout}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
@@ -147,6 +152,7 @@ function AppContent() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/" element={<ProductsPage />} />
           <Route path="/product/:productId" element={<ProductDetailPage />} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/create-subscription" element={<ProtectedRoute><CreateSubscriptionPage /></ProtectedRoute>} />
           <Route path="/subscriptions" element={<ProtectedRoute><SubscriptionsPage /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />

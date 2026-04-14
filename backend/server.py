@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
+from pydantic import EmailStr
 import logging
 
 from models import (
@@ -149,6 +150,61 @@ async def get_me(current_user: dict = Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return serialize_doc(user)
+
+
+@app.patch("/api/auth/profile", response_model=dict)
+async def update_profile(
+    full_name: Optional[str] = None,
+    email: Optional[EmailStr] = None,
+    current_password: Optional[str] = None,
+    new_password: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update user profile"""
+    db = get_database()
+    user = db.users.find_one({"_id": ObjectId(current_user["user_id"])})
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = {}
+    
+    # Update full name
+    if full_name is not None:
+        update_data["full_name"] = full_name
+    
+    # Update email (check if not already taken)
+    if email is not None and email != user["email"]:
+        existing = db.users.find_one({"email": email})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already in use")
+        update_data["email"] = email
+    
+    # Update password (requires current password verification)
+    if new_password is not None:
+        if not current_password:
+            raise HTTPException(status_code=400, detail="Current password required to set new password")
+        
+        if not verify_password(current_password, user["hashed_password"]):
+            raise HTTPException(status_code=401, detail="Current password is incorrect")
+        
+        if len(new_password) < 6:
+            raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+        
+        update_data["hashed_password"] = get_password_hash(new_password)
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No update data provided")
+    
+    # Update user
+    db.users.update_one(
+        {"_id": ObjectId(current_user["user_id"])},
+        {"$set": update_data}
+    )
+    
+    # Return updated user
+    updated_user = db.users.find_one({"_id": ObjectId(current_user["user_id"])})
+    return serialize_doc(updated_user)
 
 
 # ========== PRODUCT ENDPOINTS ==========
