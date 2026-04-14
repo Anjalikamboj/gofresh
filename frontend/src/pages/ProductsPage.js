@@ -103,8 +103,18 @@ function ProductsPage() {
                   className="product-card"
                   data-testid={`product-card-${product.sku}`}
                 >
-                  <div className="bg-secondary rounded-xl h-48 mb-4 flex items-center justify-center">
-                    <Leaf className="w-20 h-20 text-primary/30" />
+                  <div className="bg-secondary rounded-xl h-48 mb-4 overflow-hidden">
+                    {product.image_url ? (
+                      <img 
+                        src={product.image_url} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Leaf className="w-20 h-20 text-primary/30" />
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex justify-between items-start mb-2">
