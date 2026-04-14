@@ -100,7 +100,8 @@ function ProductsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="product-card"
+                  className="product-card cursor-pointer"
+                  onClick={() => navigate(`/product/${product.id}`)}
                   data-testid={`product-card-${product.sku}`}
                 >
                   <div className="bg-secondary rounded-xl h-48 mb-4 overflow-hidden">

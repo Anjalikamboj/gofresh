@@ -5,6 +5,7 @@ import './App.css';
 
 // Pages
 import ProductsPage from './pages/ProductsPage';
+import ProductDetailPage from './pages/ProductDetailPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import OrdersPage from './pages/OrdersPage';
 import AdminPage from './pages/AdminPage';
@@ -66,6 +67,7 @@ function App() {
         <main className="py-8">
           <Routes>
             <Route path="/" element={<ProductsPage />} />
+            <Route path="/product/:productId" element={<ProductDetailPage />} />
             <Route path="/create-subscription" element={<CreateSubscriptionPage />} />
             <Route path="/subscriptions" element={<SubscriptionsPage />} />
             <Route path="/orders" element={<OrdersPage />} />
