@@ -15,7 +15,7 @@ function OrdersPage() {
   const loadOrders = async () => {
     try {
       setLoading(true);
-      const data = await API.getOrders('user_default');
+      const data = await API.getOrders();
       setOrders(data);
     } catch (err) {
       setError(err.message);

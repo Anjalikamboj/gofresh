@@ -1,6 +1,6 @@
 from datetime import datetime
 from bson import ObjectId
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, EmailStr
 from typing import Optional, List
 
 
@@ -14,6 +14,46 @@ class PyObjectId(str):
         if not ObjectId.is_valid(v):
             raise ValueError("Invalid ObjectId")
         return str(v)
+
+
+class User(BaseModel):
+    id: Optional[PyObjectId] = Field(default=None, alias="_id")
+    email: EmailStr
+    full_name: str
+    hashed_password: str
+    role: str = "user"  # "user" or "admin"
+    created_at: datetime = Field(default_factory=datetime.now)
+
+    class Config:
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    full_name: str
+    password: str
+
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, v):
+        if len(v) < 6:
+            raise ValueError('Password must be at least 6 characters long')
+        return v
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
 
 
 class Product(BaseModel):
@@ -39,7 +79,7 @@ class SubscriptionItem(BaseModel):
 
 class Subscription(BaseModel):
     id: Optional[PyObjectId] = Field(default=None, alias="_id")
-    user_stub_id: str
+    user_id: str
     items: List[SubscriptionItem]
     frequency: str  # "daily" or "weekly"
     start_date: datetime
@@ -55,7 +95,7 @@ class Subscription(BaseModel):
 class Order(BaseModel):
     id: Optional[PyObjectId] = Field(default=None, alias="_id")
     subscription_id: PyObjectId
-    user_stub_id: str
+    user_id: str
     items: List[SubscriptionItem]
     scheduled_for: datetime
     status: str  # "created", "blocked", "delivered"
@@ -84,7 +124,6 @@ class ProductUpdate(BaseModel):
 
 
 class SubscriptionCreate(BaseModel):
-    user_stub_id: str
     items: List[SubscriptionItem]
     frequency: str
     start_date: Optional[datetime] = None

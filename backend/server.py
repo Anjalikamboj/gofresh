@@ -1,17 +1,21 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 import logging
 
 from models import (
     Product, ProductCreate, ProductUpdate,
     Subscription, SubscriptionCreate, SubscriptionUpdate,
-    Order
+    Order, User, UserCreate, UserLogin, Token
 )
 from database import get_database, close_database
 from scheduler import start_scheduler, shutdown_scheduler, run_order_generation_job
+from auth import (
+    get_password_hash, verify_password, create_access_token,
+    get_current_user, get_current_admin, ACCESS_TOKEN_EXPIRE_MINUTES
+)
 from bson import ObjectId
 
 logging.basicConfig(level=logging.INFO)
@@ -88,8 +92,8 @@ async def get_product(product_id: str):
 
 
 @app.post("/api/products", response_model=dict)
-async def create_product(product: ProductCreate):
-    """Create a new product (Admin)"""
+async def create_product(product: ProductCreate, current_user: dict = Depends(get_current_admin)):
+    """Create a new product (Admin only)"""
     db = get_database()
     product_dict = product.model_dump()
     product_dict['created_at'] = datetime.now()
@@ -105,8 +109,8 @@ async def create_product(product: ProductCreate):
 
 
 @app.patch("/api/products/{product_id}", response_model=dict)
-async def update_product_stock(product_id: str, update: ProductUpdate):
-    """Update product stock (Admin)"""
+async def update_product_stock(product_id: str, update: ProductUpdate, current_user: dict = Depends(get_current_admin)):
+    """Update product stock (Admin only)"""
     db = get_database()
     result = db.products.update_one(
         {"_id": ObjectId(product_id)},
@@ -123,26 +127,28 @@ async def update_product_stock(product_id: str, update: ProductUpdate):
 # ========== SUBSCRIPTION ENDPOINTS ==========
 
 @app.get("/api/subscriptions", response_model=List[dict])
-async def list_subscriptions(user_stub_id: str = None):
-    """Get all subscriptions, optionally filtered by user"""
+async def list_subscriptions(current_user: dict = Depends(get_current_user)):
+    """Get user's subscriptions"""
     db = get_database()
-    query = {"user_stub_id": user_stub_id} if user_stub_id else {}
-    subscriptions = list(db.subscriptions.find(query))
+    subscriptions = list(db.subscriptions.find({"user_id": current_user["user_id"]}))
     return serialize_doc(subscriptions)
 
 
 @app.get("/api/subscriptions/{subscription_id}", response_model=dict)
-async def get_subscription(subscription_id: str):
+async def get_subscription(subscription_id: str, current_user: dict = Depends(get_current_user)):
     """Get a specific subscription"""
     db = get_database()
-    subscription = db.subscriptions.find_one({"_id": ObjectId(subscription_id)})
+    subscription = db.subscriptions.find_one({
+        "_id": ObjectId(subscription_id),
+        "user_id": current_user["user_id"]
+    })
     if not subscription:
         raise HTTPException(status_code=404, detail="Subscription not found")
     return serialize_doc(subscription)
 
 
 @app.post("/api/subscriptions", response_model=dict)
-async def create_subscription(subscription: SubscriptionCreate):
+async def create_subscription(subscription: SubscriptionCreate, current_user: dict = Depends(get_current_user)):
     """Create a new subscription"""
     db = get_database()
     
@@ -155,7 +161,7 @@ async def create_subscription(subscription: SubscriptionCreate):
     start_date = subscription.start_date or datetime.now()
     
     subscription_dict = {
-        "user_stub_id": subscription.user_stub_id,
+        "user_id": current_user["user_id"],
         "items": [item.model_dump() for item in subscription.items],
         "frequency": subscription.frequency,
         "start_date": start_date,
@@ -170,9 +176,17 @@ async def create_subscription(subscription: SubscriptionCreate):
 
 
 @app.patch("/api/subscriptions/{subscription_id}", response_model=dict)
-async def update_subscription(subscription_id: str, update: SubscriptionUpdate):
+async def update_subscription(subscription_id: str, update: SubscriptionUpdate, current_user: dict = Depends(get_current_user)):
     """Update a subscription (pause/resume or modify items/frequency)"""
     db = get_database()
+    
+    # Verify ownership
+    existing = db.subscriptions.find_one({
+        "_id": ObjectId(subscription_id),
+        "user_id": current_user["user_id"]
+    })
+    if not existing:
+        raise HTTPException(status_code=404, detail="Subscription not found")
     
     update_data = {}
     if update.status is not None:
@@ -198,10 +212,13 @@ async def update_subscription(subscription_id: str, update: SubscriptionUpdate):
 
 
 @app.delete("/api/subscriptions/{subscription_id}")
-async def delete_subscription(subscription_id: str):
+async def delete_subscription(subscription_id: str, current_user: dict = Depends(get_current_user)):
     """Delete a subscription"""
     db = get_database()
-    result = db.subscriptions.delete_one({"_id": ObjectId(subscription_id)})
+    result = db.subscriptions.delete_one({
+        "_id": ObjectId(subscription_id),
+        "user_id": current_user["user_id"]
+    })
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Subscription not found")
@@ -273,3 +290,4 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
+

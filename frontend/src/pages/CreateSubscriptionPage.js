@@ -53,7 +53,6 @@ function CreateSubscriptionPage() {
 
     try {
       await API.createSubscription({
-        user_stub_id: 'user_default',
         items,
         frequency
       });

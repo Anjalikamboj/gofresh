@@ -68,7 +68,7 @@ def run_order_generation_job():
                 # Create blocked order (do NOT decrement stock)
                 order = {
                     "subscription_id": str(sub_id),
-                    "user_stub_id": sub['user_stub_id'],
+                    "user_id": sub['user_id'],
                     "items": sub['items'],
                     "scheduled_for": scheduled_for,
                     "status": "blocked",
@@ -87,7 +87,7 @@ def run_order_generation_job():
                 # Sufficient inventory - create order and decrement stock atomically
                 order = {
                     "subscription_id": str(sub_id),
-                    "user_stub_id": sub['user_stub_id'],
+                    "user_id": sub['user_id'],
                     "items": sub['items'],
                     "scheduled_for": scheduled_for,
                     "status": "created",

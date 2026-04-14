@@ -17,7 +17,7 @@ function SubscriptionsPage() {
   const loadSubscriptions = async () => {
     try {
       setLoading(true);
-      const data = await API.getSubscriptions('user_default');
+      const data = await API.getSubscriptions();
       setSubscriptions(data);
     } catch (err) {
       setError(err.message);
