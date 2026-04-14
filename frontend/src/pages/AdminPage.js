@@ -12,10 +12,11 @@ function AdminPage() {
   const [newProduct, setNewProduct] = useState({
     sku: '',
     name: '',
-    unit: '',
+    unit: 'kg',
     price: '',
     stock_on_hand: '',
-    description: ''
+    description: '',
+    image_url: ''
   });
 
   useEffect(() => {
@@ -66,10 +67,11 @@ function AdminPage() {
       setNewProduct({
         sku: '',
         name: '',
-        unit: '',
+        unit: 'kg',
         price: '',
         stock_on_hand: '',
-        description: ''
+        description: '',
+        image_url: ''
       });
       loadProducts();
     } catch (err) {
@@ -145,40 +147,51 @@ function AdminPage() {
           <form onSubmit={handleAddProduct} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">SKU</label>
+                <label className="block text-sm font-medium mb-1">SKU *</label>
                 <input
                   type="text"
                   required
                   value={newProduct.sku}
                   onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background"
+                  placeholder="e.g., MILK001"
                   data-testid="new-product-sku"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
+                <label className="block text-sm font-medium mb-1">Name *</label>
                 <input
                   type="text"
                   required
                   value={newProduct.name}
                   onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background"
+                  placeholder="e.g., Fresh Milk"
                   data-testid="new-product-name"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Unit</label>
-                <input
-                  type="text"
+                <label className="block text-sm font-medium mb-1">Unit *</label>
+                <select
                   required
                   value={newProduct.unit}
                   onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background"
                   data-testid="new-product-unit"
-                />
+                >
+                  <option value="kg">Kilogram (kg)</option>
+                  <option value="liter">Liter</option>
+                  <option value="dozen">Dozen</option>
+                  <option value="loaf">Loaf</option>
+                  <option value="piece">Piece</option>
+                  <option value="gram">Gram (g)</option>
+                  <option value="pack">Pack</option>
+                  <option value="bottle">Bottle</option>
+                  <option value="box">Box</option>
+                </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Price</label>
+                <label className="block text-sm font-medium mb-1">Price *</label>
                 <input
                   type="number"
                   required
@@ -186,32 +199,70 @@ function AdminPage() {
                   value={newProduct.price}
                   onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background"
+                  placeholder="e.g., 60"
                   data-testid="new-product-price"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Stock</label>
+                <label className="block text-sm font-medium mb-1">Stock *</label>
                 <input
                   type="number"
                   required
                   value={newProduct.stock_on_hand}
                   onChange={(e) => setNewProduct({ ...newProduct, stock_on_hand: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background"
+                  placeholder="e.g., 100"
                   data-testid="new-product-stock"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
+                <label className="block text-sm font-medium mb-1">Image URL</label>
                 <input
-                  type="text"
-                  value={newProduct.description}
-                  onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                  type="url"
+                  value={newProduct.image_url}
+                  onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background"
-                  data-testid="new-product-description"
+                  placeholder="https://example.com/image.jpg"
+                  data-testid="new-product-image"
                 />
+                <p className="text-xs text-muted-foreground mt-1">Optional: URL to product image</p>
               </div>
             </div>
-            <div className="flex justify-end gap-3">
+            
+            <div>
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <textarea
+                value={newProduct.description}
+                onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-input bg-background resize-y min-h-[100px]"
+                placeholder="Enter product description, benefits, storage instructions, etc."
+                rows="4"
+                data-testid="new-product-description"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Optional: Detailed product information</p>
+            </div>
+            
+            {newProduct.image_url && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Image Preview</label>
+                <div className="bg-secondary rounded-lg p-4 flex items-center justify-center" style={{ maxHeight: '200px' }}>
+                  <img 
+                    src={newProduct.image_url} 
+                    alt="Preview" 
+                    className="max-h-[180px] rounded-lg object-contain"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                  <p className="text-muted-foreground text-sm" style={{ display: 'none' }}>
+                    Invalid image URL
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex justify-end gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
