@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, Calendar, Shield, Save, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Calendar, Shield, Save, AlertCircle, CheckCircle, ArrowLeft, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
@@ -209,6 +209,20 @@ function ProfilePage() {
                 </div>
               </div>
             </div>
+
+            {/* Admin Panel Button - Only visible for admin users */}
+            {user.role === 'admin' && (
+              <div className="mt-6 pt-6 border-t border-border">
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl font-medium transition-all hover:bg-primary/90 flex items-center justify-center gap-2"
+                  data-testid="admin-panel-button"
+                >
+                  <Settings className="w-5 h-5" />
+                  Go to Admin Panel
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Edit Profile Form */}
