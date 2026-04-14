@@ -108,6 +108,13 @@ class Order(BaseModel):
         json_encoders = {ObjectId: str}
 
 
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+
 # Request/Response Models
 class ProductCreate(BaseModel):
     sku: str

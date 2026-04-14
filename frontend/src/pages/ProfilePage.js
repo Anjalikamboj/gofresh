@@ -43,9 +43,9 @@ function ProfilePage() {
     setSuccess(null);
 
     try {
+      // Only send full_name (email is read-only)
       await API.updateProfile({
-        full_name: profileData.fullName,
-        email: profileData.email
+        full_name: profileData.fullName
       });
       
       // Reload user data
@@ -259,14 +259,14 @@ function ProfilePage() {
                     id="email"
                     name="email"
                     type="email"
-                    required
                     value={profileData.email}
-                    onChange={handleProfileChange}
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-all"
-                    placeholder="you@example.com"
+                    readOnly
+                    disabled
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-input bg-muted text-muted-foreground cursor-not-allowed"
                     data-testid="email-input"
                   />
                 </div>
+                <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
               </div>
 
               <button

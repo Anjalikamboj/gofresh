@@ -114,11 +114,14 @@ class API {
       headers: getAuthHeaders(),
       body: JSON.stringify(data)
     });
+    
+    const result = await response.json();
+    
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to update profile');
+      throw new Error(result.detail || 'Failed to update profile');
     }
-    return response.json();
+    
+    return result;
   }
 }
 
