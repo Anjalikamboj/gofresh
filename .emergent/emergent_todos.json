@@ -1,10 +1,30 @@
 [
   {
-    "content": "Phase 2: End to End Testing using Testing Agent",
+    "content": "Add paginated users endpoint to backend (GET /api/admin/users with page, page_size, total)",
     "status": "completed"
   },
   {
-    "content": "Phase 2: All user stories covered in Development and testing",
+    "content": "Update App.js routing to use AdminLayout with nested routes for /admin, /admin/products, /admin/orders, /admin/users",
+    "status": "completed"
+  },
+  {
+    "content": "Split AdminPage.js functionality into AdminProductsPage.js (inventory + stock management)",
+    "status": "completed"
+  },
+  {
+    "content": "Create AdminOrdersPage.js to display all orders (admin view)",
+    "status": "completed"
+  },
+  {
+    "content": "Create AdminUsersPage.js with pagination controls for viewing all users",
+    "status": "completed"
+  },
+  {
+    "content": "Update API.js to add adminGetUsers method for paginated user fetching",
+    "status": "completed"
+  },
+  {
+    "content": "Test the admin sidebar navigation and all new pages using screenshot tool",
     "status": "completed"
   }
 ]

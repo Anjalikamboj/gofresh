@@ -9,11 +9,17 @@ import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import SubscriptionsPage from './pages/SubscriptionsPage';
 import OrdersPage from './pages/OrdersPage';
-import AdminPage from './pages/AdminPage';
 import CreateSubscriptionPage from './pages/CreateSubscriptionPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
+
+// Admin Pages
+import AdminLayout from './components/AdminLayout';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminProductsPage from './pages/AdminProductsPage';
+import AdminOrdersPage from './pages/AdminOrdersPage';
+import AdminUsersPage from './pages/AdminUsersPage';
 
 // Protected Route
 function ProtectedRoute({ children }) {
@@ -217,7 +223,14 @@ function AppContent() {
           <Route path="/create-subscription" element={<ProtectedRoute><CreateSubscriptionPage /></ProtectedRoute>} />
           <Route path="/subscriptions" element={<ProtectedRoute><SubscriptionsPage /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
-          <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+          
+          {/* Admin Routes with Sidebar Layout */}
+          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProductsPage />} />
+            <Route path="orders" element={<AdminOrdersPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
+          </Route>
         </Routes>
       </main>
     </div>

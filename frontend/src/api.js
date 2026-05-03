@@ -123,6 +123,15 @@ class API {
     
     return result;
   }
+
+  // Admin - Users
+  async adminGetUsers(page = 1, pageSize = 10) {
+    const response = await fetch(`${BACKEND_URL}/api/admin/users?page=${page}&page_size=${pageSize}`, {
+      headers: getAuthHeaders()
+    });
+    if (!response.ok) throw new Error('Failed to fetch users');
+    return response.json();
+  }
 }
 
 export default new API();

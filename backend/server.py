@@ -204,6 +204,51 @@ async def update_profile(
     return serialize_doc(updated_user)
 
 
+
+# ========== ADMIN USER MANAGEMENT ==========
+
+@app.get("/api/admin/users", response_model=dict)
+async def get_all_users(
+    page: int = 1,
+    page_size: int = 10,
+    current_user: dict = Depends(get_current_admin)
+):
+    """Get paginated list of all users (Admin only)"""
+    db = get_database()
+    
+    # Validate pagination parameters
+    if page < 1:
+        page = 1
+    if page_size < 1 or page_size > 100:
+        page_size = 10
+    
+    # Calculate skip
+    skip = (page - 1) * page_size
+    
+    # Get total count
+    total = db.users.count_documents({})
+    
+    # Get paginated users
+    users = list(
+        db.users.find({})
+        .sort("created_at", -1)  # Newest first
+        .skip(skip)
+        .limit(page_size)
+    )
+    
+    # Calculate total pages
+    total_pages = (total + page_size - 1) // page_size
+    
+    return {
+        "items": serialize_doc(users),
+        "page": page,
+        "page_size": page_size,
+        "total": total,
+        "total_pages": total_pages
+    }
+
+
+
 # ========== PRODUCT ENDPOINTS ==========
 
 @app.get("/api/products", response_model=List[dict])
