@@ -65,6 +65,8 @@ class Product(BaseModel):
     stock_on_hand: int
     image_url: Optional[str] = None
     description: Optional[str] = None
+    benefits: Optional[List[str]] = None
+    storage: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)
 
     class Config:
@@ -124,6 +126,8 @@ class ProductCreate(BaseModel):
     stock_on_hand: int
     image_url: Optional[str] = None
     description: Optional[str] = None
+    benefits: Optional[List[str]] = None
+    storage: Optional[str] = None
 
 
 class ProductUpdate(BaseModel):

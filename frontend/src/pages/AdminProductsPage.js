@@ -28,7 +28,9 @@ function AdminProductsPage() {
     price: '',
     stock_on_hand: '',
     description: '',
-    image_url: ''
+    image_url: '',
+    benefits: [''],
+    storage: ''
   });
 
   useEffect(() => {
@@ -70,10 +72,15 @@ function AdminProductsPage() {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
+      // Filter out empty benefits
+      const filteredBenefits = newProduct.benefits.filter(b => b.trim() !== '');
+      
       await API.createProduct({
         ...newProduct,
         price: parseFloat(newProduct.price),
-        stock_on_hand: parseInt(newProduct.stock_on_hand)
+        stock_on_hand: parseInt(newProduct.stock_on_hand),
+        benefits: filteredBenefits.length > 0 ? filteredBenefits : undefined,
+        storage: newProduct.storage.trim() || undefined
       });
       setShowAddForm(false);
       setNewProduct({
@@ -83,7 +90,9 @@ function AdminProductsPage() {
         price: '',
         stock_on_hand: '',
         description: '',
-        image_url: ''
+        image_url: '',
+        benefits: [''],
+        storage: ''
       });
       loadProducts();
     } catch (err) {
@@ -114,6 +123,21 @@ function AdminProductsPage() {
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
     setProductToDelete(null);
+  };
+
+  const handleBenefitChange = (index, value) => {
+    const updatedBenefits = [...newProduct.benefits];
+    updatedBenefits[index] = value;
+    setNewProduct({ ...newProduct, benefits: updatedBenefits });
+  };
+
+  const addBenefitField = () => {
+    setNewProduct({ ...newProduct, benefits: [...newProduct.benefits, ''] });
+  };
+
+  const removeBenefitField = (index) => {
+    const updatedBenefits = newProduct.benefits.filter((_, i) => i !== index);
+    setNewProduct({ ...newProduct, benefits: updatedBenefits.length > 0 ? updatedBenefits : [''] });
   };
 
   if (loading) {
@@ -259,6 +283,59 @@ function AdminProductsPage() {
                 data-testid="new-product-description"
               />
               <p className="text-xs text-muted-foreground mt-1">Optional: Detailed product information</p>
+            </div>
+
+            {/* Key Benefits */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Key Benefits</label>
+              <div className="space-y-2">
+                {newProduct.benefits.map((benefit, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={benefit}
+                      onChange={(e) => handleBenefitChange(index, e.target.value)}
+                      className="flex-1 px-3 py-2 rounded-lg border border-input bg-background"
+                      placeholder={`Benefit ${index + 1}`}
+                      data-testid={`new-product-benefit-${index}`}
+                    />
+                    {newProduct.benefits.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeBenefitField(index)}
+                        className="p-2 rounded-lg border border-border hover:bg-destructive/10 hover:border-destructive/20 text-destructive transition-colors"
+                        data-testid={`remove-benefit-${index}`}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addBenefitField}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground border border-dashed border-border rounded-lg hover:border-primary transition-colors"
+                  data-testid="add-benefit-button"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Another Benefit
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Optional: List product benefits (e.g., "Rich in Vitamin C", "Locally sourced")</p>
+            </div>
+
+            {/* Storage Instructions */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Storage Instructions</label>
+              <textarea
+                value={newProduct.storage}
+                onChange={(e) => setNewProduct({ ...newProduct, storage: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-input bg-background resize-y min-h-[80px]"
+                placeholder="e.g., Store in refrigerator at 2-4°C. Best consumed within 3 days."
+                rows="3"
+                data-testid="new-product-storage"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Optional: How to store this product for optimal freshness</p>
             </div>
             
             {newProduct.image_url && (
