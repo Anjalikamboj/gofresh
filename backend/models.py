@@ -65,6 +65,8 @@ class Product(BaseModel):
     stock_on_hand: int
     image_url: Optional[str] = None
     description: Optional[str] = None
+    benefits: Optional[List[str]] = None
+    storage: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)
 
     class Config:
@@ -108,6 +110,13 @@ class Order(BaseModel):
         json_encoders = {ObjectId: str}
 
 
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+
 # Request/Response Models
 class ProductCreate(BaseModel):
     sku: str
@@ -117,10 +126,23 @@ class ProductCreate(BaseModel):
     stock_on_hand: int
     image_url: Optional[str] = None
     description: Optional[str] = None
+    benefits: Optional[List[str]] = None
+    storage: Optional[str] = None
 
 
 class ProductUpdate(BaseModel):
     stock_on_hand: int
+
+
+class ProductFullUpdate(BaseModel):
+    name: Optional[str] = None
+    unit: Optional[str] = None
+    price: Optional[float] = None
+    stock_on_hand: Optional[int] = None
+    image_url: Optional[str] = None
+    description: Optional[str] = None
+    benefits: Optional[List[str]] = None
+    storage: Optional[str] = None
 
 
 class SubscriptionCreate(BaseModel):

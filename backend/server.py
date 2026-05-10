@@ -7,9 +7,9 @@ from pydantic import EmailStr
 import logging
 
 from models import (
-    Product, ProductCreate, ProductUpdate,
+    Product, ProductCreate, ProductUpdate, ProductFullUpdate,
     Subscription, SubscriptionCreate, SubscriptionUpdate,
-    Order, User, UserCreate, UserLogin, Token
+    Order, User, UserCreate, UserLogin, Token, UserUpdate
 )
 from database import get_database, close_database
 from scheduler import start_scheduler, shutdown_scheduler, run_order_generation_job
@@ -154,10 +154,7 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 
 @app.patch("/api/auth/profile", response_model=dict)
 async def update_profile(
-    full_name: Optional[str] = None,
-    email: Optional[EmailStr] = None,
-    current_password: Optional[str] = None,
-    new_password: Optional[str] = None,
+    update_data: UserUpdate,
     current_user: dict = Depends(get_current_user)
 ):
     """Update user profile"""
@@ -167,44 +164,89 @@ async def update_profile(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    update_data = {}
+    updates = {}
     
     # Update full name
-    if full_name is not None:
-        update_data["full_name"] = full_name
+    if update_data.full_name is not None:
+        updates["full_name"] = update_data.full_name
     
     # Update email (check if not already taken)
-    if email is not None and email != user["email"]:
-        existing = db.users.find_one({"email": email})
+    if update_data.email is not None and update_data.email != user["email"]:
+        existing = db.users.find_one({"email": update_data.email})
         if existing:
             raise HTTPException(status_code=400, detail="Email already in use")
-        update_data["email"] = email
+        updates["email"] = update_data.email
     
     # Update password (requires current password verification)
-    if new_password is not None:
-        if not current_password:
+    if update_data.new_password is not None:
+        if not update_data.current_password:
             raise HTTPException(status_code=400, detail="Current password required to set new password")
         
-        if not verify_password(current_password, user["hashed_password"]):
+        if not verify_password(update_data.current_password, user["hashed_password"]):
             raise HTTPException(status_code=401, detail="Current password is incorrect")
         
-        if len(new_password) < 6:
+        if len(update_data.new_password) < 6:
             raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
         
-        update_data["hashed_password"] = get_password_hash(new_password)
+        updates["hashed_password"] = get_password_hash(update_data.new_password)
     
-    if not update_data:
+    if not updates:
         raise HTTPException(status_code=400, detail="No update data provided")
     
     # Update user
     db.users.update_one(
         {"_id": ObjectId(current_user["user_id"])},
-        {"$set": update_data}
+        {"$set": updates}
     )
     
     # Return updated user
     updated_user = db.users.find_one({"_id": ObjectId(current_user["user_id"])})
     return serialize_doc(updated_user)
+
+
+
+# ========== ADMIN USER MANAGEMENT ==========
+
+@app.get("/api/admin/users", response_model=dict)
+async def get_all_users(
+    page: int = 1,
+    page_size: int = 10,
+    current_user: dict = Depends(get_current_admin)
+):
+    """Get paginated list of all users (Admin only)"""
+    db = get_database()
+    
+    # Validate pagination parameters
+    if page < 1:
+        page = 1
+    if page_size < 1 or page_size > 100:
+        page_size = 10
+    
+    # Calculate skip
+    skip = (page - 1) * page_size
+    
+    # Get total count
+    total = db.users.count_documents({})
+    
+    # Get paginated users
+    users = list(
+        db.users.find({})
+        .sort("created_at", -1)  # Newest first
+        .skip(skip)
+        .limit(page_size)
+    )
+    
+    # Calculate total pages
+    total_pages = (total + page_size - 1) // page_size
+    
+    return {
+        "items": serialize_doc(users),
+        "page": page,
+        "page_size": page_size,
+        "total": total,
+        "total_pages": total_pages
+    }
+
 
 
 # ========== PRODUCT ENDPOINTS ==========
@@ -258,6 +300,81 @@ async def update_product_stock(product_id: str, update: ProductUpdate, current_u
     
     updated_product = db.products.find_one({"_id": ObjectId(product_id)})
     return serialize_doc(updated_product)
+
+
+
+@app.put("/api/products/{product_id}", response_model=dict)
+async def update_product(product_id: str, update: ProductFullUpdate, current_user: dict = Depends(get_current_admin)):
+    """Update product details (Admin only)"""
+    db = get_database()
+    
+    # Check if product exists
+    product = db.products.find_one({"_id": ObjectId(product_id)})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Build update dict with only provided fields
+    update_data = {}
+    if update.name is not None:
+        update_data["name"] = update.name
+    if update.unit is not None:
+        update_data["unit"] = update.unit
+    if update.price is not None:
+        update_data["price"] = update.price
+    if update.stock_on_hand is not None:
+        update_data["stock_on_hand"] = update.stock_on_hand
+    if update.image_url is not None:
+        update_data["image_url"] = update.image_url
+    if update.description is not None:
+        update_data["description"] = update.description
+    if update.benefits is not None:
+        update_data["benefits"] = update.benefits
+    if update.storage is not None:
+        update_data["storage"] = update.storage
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    # Update product
+    result = db.products.update_one(
+        {"_id": ObjectId(product_id)},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    updated_product = db.products.find_one({"_id": ObjectId(product_id)})
+    return serialize_doc(updated_product)
+
+
+
+@app.delete("/api/products/{product_id}", response_model=dict)
+async def delete_product(product_id: str, current_user: dict = Depends(get_current_admin)):
+    """Delete a product (Admin only)"""
+    db = get_database()
+    
+    # Check if product exists
+    product = db.products.find_one({"_id": ObjectId(product_id)})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Check if product is used in any active subscriptions
+    active_subscriptions = db.subscriptions.count_documents({
+        "items.product_id": product_id,
+        "status": "active"
+    })
+    
+    if active_subscriptions > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete product. It is used in {active_subscriptions} active subscription(s)"
+        )
+    
+    # Delete the product
+    db.products.delete_one({"_id": ObjectId(product_id)})
+    
+    return {"message": "Product deleted successfully", "id": product_id}
 
 
 # ========== SUBSCRIPTION ENDPOINTS ==========

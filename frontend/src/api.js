@@ -38,6 +38,31 @@ class API {
     return response.json();
   }
 
+  async deleteProduct(productId) {
+    const response = await fetch(`${BACKEND_URL}/api/products/${productId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to delete product');
+    }
+    return response.json();
+  }
+
+  async updateProduct(productId, productData) {
+    const response = await fetch(`${BACKEND_URL}/api/products/${productId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(productData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to update product');
+    }
+    return response.json();
+  }
+
   // Subscriptions
   async getSubscriptions() {
     const response = await fetch(`${BACKEND_URL}/api/subscriptions`, {
@@ -114,10 +139,22 @@ class API {
       headers: getAuthHeaders(),
       body: JSON.stringify(data)
     });
+    
+    const result = await response.json();
+    
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to update profile');
+      throw new Error(result.detail || 'Failed to update profile');
     }
+    
+    return result;
+  }
+
+  // Admin - Users
+  async adminGetUsers(page = 1, pageSize = 10) {
+    const response = await fetch(`${BACKEND_URL}/api/admin/users?page=${page}&page_size=${pageSize}`, {
+      headers: getAuthHeaders()
+    });
+    if (!response.ok) throw new Error('Failed to fetch users');
     return response.json();
   }
 }
