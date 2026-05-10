@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Pencil, Save, X, Plus, AlertCircle } from 'lucide-react';
+import { Pencil, Save, X, Plus, AlertCircle, Trash2 } from 'lucide-react';
 import API from '../api';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../components/ui/alert-dialog';
 
 function AdminProductsPage() {
   const [products, setProducts] = useState([]);
@@ -9,6 +19,8 @@ function AdminProductsPage() {
   const [editingId, setEditingId] = useState(null);
   const [editStock, setEditStock] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const [newProduct, setNewProduct] = useState({
     sku: '',
     name: '',
@@ -77,6 +89,31 @@ function AdminProductsPage() {
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!productToDelete) return;
+    
+    try {
+      await API.deleteProduct(productToDelete.id);
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
+      loadProducts();
+    } catch (err) {
+      setError(err.message);
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setProductToDelete(null);
   };
 
   if (loading) {
@@ -323,13 +360,24 @@ function AdminProductsPage() {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => handleEditStart(product)}
-                        className="p-2 rounded-lg border border-border hover:bg-secondary transition-colors"
-                        data-testid={`edit-stock-${product.sku}`}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => handleEditStart(product)}
+                          className="p-2 rounded-lg border border-border hover:bg-secondary transition-colors"
+                          data-testid={`edit-stock-${product.sku}`}
+                          title="Edit stock"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(product)}
+                          className="p-2 rounded-lg border border-destructive/20 text-destructive hover:bg-destructive/10 transition-colors"
+                          data-testid={`delete-product-${product.sku}`}
+                          title="Delete product"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -338,6 +386,29 @@ function AdminProductsPage() {
           </table>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Product</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{productToDelete?.name}</strong> (SKU: {productToDelete?.sku})?
+              <br /><br />
+              This action cannot be undone. The product will be permanently removed from your inventory.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

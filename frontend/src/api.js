@@ -38,6 +38,18 @@ class API {
     return response.json();
   }
 
+  async deleteProduct(productId) {
+    const response = await fetch(`${BACKEND_URL}/api/products/${productId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to delete product');
+    }
+    return response.json();
+  }
+
   // Subscriptions
   async getSubscriptions() {
     const response = await fetch(`${BACKEND_URL}/api/subscriptions`, {

@@ -302,6 +302,35 @@ async def update_product_stock(product_id: str, update: ProductUpdate, current_u
     return serialize_doc(updated_product)
 
 
+
+@app.delete("/api/products/{product_id}", response_model=dict)
+async def delete_product(product_id: str, current_user: dict = Depends(get_current_admin)):
+    """Delete a product (Admin only)"""
+    db = get_database()
+    
+    # Check if product exists
+    product = db.products.find_one({"_id": ObjectId(product_id)})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Check if product is used in any active subscriptions
+    active_subscriptions = db.subscriptions.count_documents({
+        "items.product_id": product_id,
+        "status": "active"
+    })
+    
+    if active_subscriptions > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete product. It is used in {active_subscriptions} active subscription(s)"
+        )
+    
+    # Delete the product
+    db.products.delete_one({"_id": ObjectId(product_id)})
+    
+    return {"message": "Product deleted successfully", "id": product_id}
+
+
 # ========== SUBSCRIPTION ENDPOINTS ==========
 
 @app.get("/api/subscriptions", response_model=List[dict])
