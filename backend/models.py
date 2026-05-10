@@ -134,6 +134,17 @@ class ProductUpdate(BaseModel):
     stock_on_hand: int
 
 
+class ProductFullUpdate(BaseModel):
+    name: Optional[str] = None
+    unit: Optional[str] = None
+    price: Optional[float] = None
+    stock_on_hand: Optional[int] = None
+    image_url: Optional[str] = None
+    description: Optional[str] = None
+    benefits: Optional[List[str]] = None
+    storage: Optional[str] = None
+
+
 class SubscriptionCreate(BaseModel):
     items: List[SubscriptionItem]
     frequency: str

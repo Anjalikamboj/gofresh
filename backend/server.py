@@ -7,7 +7,7 @@ from pydantic import EmailStr
 import logging
 
 from models import (
-    Product, ProductCreate, ProductUpdate,
+    Product, ProductCreate, ProductUpdate, ProductFullUpdate,
     Subscription, SubscriptionCreate, SubscriptionUpdate,
     Order, User, UserCreate, UserLogin, Token, UserUpdate
 )
@@ -293,6 +293,52 @@ async def update_product_stock(product_id: str, update: ProductUpdate, current_u
     result = db.products.update_one(
         {"_id": ObjectId(product_id)},
         {"$set": {"stock_on_hand": update.stock_on_hand}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    updated_product = db.products.find_one({"_id": ObjectId(product_id)})
+    return serialize_doc(updated_product)
+
+
+
+@app.put("/api/products/{product_id}", response_model=dict)
+async def update_product(product_id: str, update: ProductFullUpdate, current_user: dict = Depends(get_current_admin)):
+    """Update product details (Admin only)"""
+    db = get_database()
+    
+    # Check if product exists
+    product = db.products.find_one({"_id": ObjectId(product_id)})
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Build update dict with only provided fields
+    update_data = {}
+    if update.name is not None:
+        update_data["name"] = update.name
+    if update.unit is not None:
+        update_data["unit"] = update.unit
+    if update.price is not None:
+        update_data["price"] = update.price
+    if update.stock_on_hand is not None:
+        update_data["stock_on_hand"] = update.stock_on_hand
+    if update.image_url is not None:
+        update_data["image_url"] = update.image_url
+    if update.description is not None:
+        update_data["description"] = update.description
+    if update.benefits is not None:
+        update_data["benefits"] = update.benefits
+    if update.storage is not None:
+        update_data["storage"] = update.storage
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    # Update product
+    result = db.products.update_one(
+        {"_id": ObjectId(product_id)},
+        {"$set": update_data}
     )
     
     if result.matched_count == 0:

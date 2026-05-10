@@ -50,6 +50,19 @@ class API {
     return response.json();
   }
 
+  async updateProduct(productId, productData) {
+    const response = await fetch(`${BACKEND_URL}/api/products/${productId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(productData)
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to update product');
+    }
+    return response.json();
+  }
+
   // Subscriptions
   async getSubscriptions() {
     const response = await fetch(`${BACKEND_URL}/api/subscriptions`, {
