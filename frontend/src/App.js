@@ -185,14 +185,7 @@ function Navigation() {
                 )}
               </div>
             ) : (
-              <div className="flex gap-2 ml-2 pl-2 border-l border-border">
-                <Link
-                  to="/login"
-                  className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  data-testid="login-nav-link"
-                >
-                  Sign in
-                </Link>
+              <div className="ml-2 pl-2 border-l border-border">
                 <Link
                   to="/register"
                   className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -213,26 +206,31 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="py-8">
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={<ProductsPage />} />
-          <Route path="/product/:productId" element={<ProductDetailPage />} />
-          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/create-subscription" element={<ProtectedRoute><CreateSubscriptionPage /></ProtectedRoute>} />
-          <Route path="/subscriptions" element={<ProtectedRoute><SubscriptionsPage /></ProtectedRoute>} />
-          <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
-          
-          {/* Admin Routes with Sidebar Layout */}
-          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="products" element={<AdminProductsPage />} />
-            <Route path="orders" element={<AdminOrdersPage />} />
-            <Route path="users" element={<AdminUsersPage />} />
-          </Route>
-        </Routes>
-      </main>
+      <Routes>
+        {/* Admin Routes with Sidebar Layout - No padding wrapper */}
+        <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+        </Route>
+        
+        {/* Regular Routes with padding */}
+        <Route path="*" element={
+          <main className="py-8">
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/" element={<ProductsPage />} />
+              <Route path="/product/:productId" element={<ProductDetailPage />} />
+              <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="/create-subscription" element={<ProtectedRoute><CreateSubscriptionPage /></ProtectedRoute>} />
+              <Route path="/subscriptions" element={<ProtectedRoute><SubscriptionsPage /></ProtectedRoute>} />
+              <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+            </Routes>
+          </main>
+        } />
+      </Routes>
     </div>
   );
 }

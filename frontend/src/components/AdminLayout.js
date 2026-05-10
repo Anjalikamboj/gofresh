@@ -43,7 +43,7 @@ function AdminLayout() {
         }`}
       >
         {/* Sidebar Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-border">
+        <div className="h-14 flex items-center justify-between px-4 border-b border-border">
           {sidebarOpen && (
             <h2 className="text-lg font-semibold">Admin Panel</h2>
           )}
@@ -89,7 +89,7 @@ function AdminLayout() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-background">
-        <div className="p-6">
+        <div className="p-8">
           <Outlet />
         </div>
       </main>
