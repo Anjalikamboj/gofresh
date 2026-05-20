@@ -1,0 +1,32 @@
+import express, { Application } from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import apiRoutes from './routes';
+import { errorMiddleware } from './middlewares/error.middleware';
+
+const app: Application = express();
+
+// ── Security headers ──────────────────────────────────────────────────────────
+app.use(helmet());
+
+// ── CORS (mirrors Python: allow_origins=["*"]) ────────────────────────────────
+app.use(
+  cors({
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['*'],
+  }),
+);
+
+// ── Body parsing ──────────────────────────────────────────────────────────────
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ── API routes ────────────────────────────────────────────────────────────────
+app.use('/api', apiRoutes);
+
+// ── Centralized error handler (must be last middleware) ───────────────────────
+app.use(errorMiddleware);
+
+export default app;
