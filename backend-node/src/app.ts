@@ -12,7 +12,7 @@ app.use(helmet());
 // ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://khetise.onrender.com'],
+    origin: ['http://localhost:3000', 'https://khetise.in', 'https://khetise.vercel.app'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['*'],
