@@ -1,4 +1,4 @@
-# GroFresh Backend — Node.js + TypeScript
+# KhetiSe Backend — Node.js + TypeScript
 
 A production-grade Node.js TypeScript backend that is a faithful migration of the original Python FastAPI backend. All API routes, response shapes, auth flows, business rules, database indexes, and scheduler logic are preserved exactly.
 
@@ -94,7 +94,7 @@ The server starts on `http://localhost:8001` by default.
 | `PORT` | `8001` | HTTP server port |
 | `NODE_ENV` | `development` | Environment name |
 | `MONGO_URL` | `mongodb://localhost:27017/` | MongoDB connection string |
-| `MONGO_DB_NAME` | `grofresh` | MongoDB database name |
+| `MONGO_DB_NAME` | `khetise` | MongoDB database name |
 | `JWT_SECRET_KEY` | *(must be set)* | JWT signing secret — **change in production** |
 
 ---
@@ -157,7 +157,7 @@ All routes are prefixed with `/api`.
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/api/health` | Returns `{status: "healthy", service: "GroFresh API"}` |
+| GET | `/api/health` | Returns `{status: "healthy", service: "KhetiSe API"}` |
 
 ---
 

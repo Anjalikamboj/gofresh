@@ -1,5 +1,5 @@
 """
-GroFresh Phase 1 POC: Core Subscription Scheduling Test
+KhetiSe Phase 1 POC: Core Subscription Scheduling Test
 Tests all critical user stories for subscription order generation
 """
 import os
@@ -11,7 +11,7 @@ from bson.objectid import ObjectId
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 client = MongoClient(MONGO_URL)
-db = client['grofresh_poc']
+db = client['khetise_poc']
 
 # Collections
 products_col = db['products']
@@ -380,7 +380,7 @@ def test_5_pause_resume_subscription():
 def run_all_tests():
     """Run all POC tests"""
     print("\n" + "🚀"*30)
-    print("GROFRESH PHASE 1 POC - CORE SCHEDULING TESTS")
+    print("KHETISE PHASE 1 POC - CORE SCHEDULING TESTS")
     print("🚀"*30)
     
     try:

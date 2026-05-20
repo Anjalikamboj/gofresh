@@ -1,13 +1,13 @@
-# GroFresh Authentication - Test Credentials
+# KhetiSe Authentication - Test Credentials
 
 ## Admin Account
-- **Email:** admin@grofresh.com
+- **Email:** admin@khetise.com
 - **Password:** admin123
 - **Role:** admin
 - **Access:** Full admin dashboard, inventory management, scheduler control
 
 ## Regular User Account
-- **Email:** user@grofresh.com
+- **Email:** user@khetise.com
 - **Password:** user123
 - **Role:** user
 - **Access:** Browse products, create subscriptions, view orders

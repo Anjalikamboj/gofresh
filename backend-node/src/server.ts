@@ -4,7 +4,7 @@ import { startScheduler, shutdownScheduler } from './modules/scheduler/scheduler
 import app from './app';
 
 async function bootstrap(): Promise<void> {
-  console.info('[Server] Starting GroFresh backend...');
+  console.info('[Server] Starting KhetiSe backend...');
 
   // Connect to MongoDB
   await connectDatabase();

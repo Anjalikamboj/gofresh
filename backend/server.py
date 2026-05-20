@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("Starting GroFresh backend...")
+    logger.info("Starting KhetiSe backend...")
     get_database()
     start_scheduler()
     yield
@@ -36,7 +36,7 @@ async def lifespan(app: FastAPI):
     logger.info("Shutdown complete")
 
 
-app = FastAPI(title="GroFresh API", lifespan=lifespan)
+app = FastAPI(title="KhetiSe API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -537,7 +537,7 @@ async def trigger_scheduler():
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy", "service": "GroFresh API"}
+    return {"status": "healthy", "service": "KhetiSe API"}
 
 
 if __name__ == "__main__":

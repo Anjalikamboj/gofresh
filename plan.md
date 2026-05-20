@@ -1,4 +1,4 @@
-# GroFresh (React + FastAPI + MongoDB) — plan.md
+# KhetiSe (React + FastAPI + MongoDB) — plan.md
 
 ## 1) Objectives
 - Deliver a scalable farm-to-home **fresh subscription** platform focused on **daily/weekly scheduling**.

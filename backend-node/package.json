@@ -1,7 +1,7 @@
 {
-  "name": "grofresh-backend",
+  "name": "khetise-backend",
   "version": "1.0.0",
-  "description": "GroFresh Backend API - Node.js TypeScript",
+  "description": "KhetiSe Backend API - Node.js TypeScript",
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon",

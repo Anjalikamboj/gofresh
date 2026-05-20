@@ -12,7 +12,7 @@ def get_database():
     global client, db
     if db is None:
         client = MongoClient(MONGO_URL)
-        db = client['grofresh']
+        db = client['khetise']
         # Create indexes
         db.orders.create_index([("subscription_id", ASCENDING), ("scheduled_for", ASCENDING)], unique=True)
         db.subscriptions.create_index([("user_stub_id", ASCENDING)])

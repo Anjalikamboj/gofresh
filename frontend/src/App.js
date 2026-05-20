@@ -89,7 +89,7 @@ function Navigation() {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2" data-testid="logo-link">
             <Leaf className="w-8 h-8 text-primary" />
-            <span className="text-2xl font-semibold tracking-tight">GroFresh</span>
+            <span className="text-2xl font-semibold tracking-tight">KhetiSe</span>
           </Link>
           
           <div className="flex items-center gap-3">

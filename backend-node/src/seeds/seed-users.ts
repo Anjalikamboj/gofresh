@@ -20,13 +20,13 @@ async function seedUsers(): Promise<void> {
 
   const users = [
     {
-      email: 'admin@grofresh.com',
+      email: 'admin@khetise.com',
       full_name: 'Admin User',
       password: 'admin123',
       role: 'admin' as const,
     },
     {
-      email: 'user@grofresh.com',
+      email: 'user@khetise.com',
       full_name: 'Test User',
       password: 'user123',
       role: 'user' as const,

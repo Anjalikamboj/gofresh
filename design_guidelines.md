@@ -1,6 +1,6 @@
 {
   "brand": {
-    "product_name": "GroFresh",
+    "product_name": "KhetiSe",
     "positioning": "Farm-to-home fresh subscriptions with real-time inventory visibility",
     "brand_attributes": [
       "fresh",
@@ -198,7 +198,7 @@
   "page_blueprints": {
     "global_shell": {
       "top_nav": {
-        "layout": "Left: GroFresh wordmark + Leaf icon; Center (desktop): Products / Subscriptions / Orders / Admin; Right: Search + Cart placeholder (future) + Profile",
+        "layout": "Left: KhetiSe wordmark + Leaf icon; Center (desktop): Products / Subscriptions / Orders / Admin; Right: Search + Cart placeholder (future) + Profile",
         "component": "navigation-menu + input (search) + dropdown-menu (profile)",
         "mobile": "Use sheet/drawer for nav; keep search as icon opening a dialog",
         "data_testids": {

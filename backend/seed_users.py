@@ -1,5 +1,5 @@
 """
-Seed admin user for GroFresh
+Seed admin user for KhetiSe
 """
 import os
 from pymongo import MongoClient
@@ -8,12 +8,12 @@ from passlib.context import CryptContext
 
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 client = MongoClient(MONGO_URL)
-db = client['grofresh']
+db = client['khetise']
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Create admin user
-admin_email = "admin@grofresh.com"
+admin_email = "admin@khetise.com"
 admin_password = "admin123"
 
 # Check if admin exists
@@ -37,7 +37,7 @@ else:
     print(f"   Role: admin")
 
 # Create regular test user
-user_email = "user@grofresh.com"
+user_email = "user@khetise.com"
 user_password = "user123"
 
 existing_user = db.users.find_one({"email": user_email})

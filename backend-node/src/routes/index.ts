@@ -18,7 +18,7 @@ router.use('/scheduler', schedulerRoutes);
 
 // ── Health check ──────────────────────────────────────────────────────────────
 router.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({ status: 'healthy', service: 'GroFresh API' });
+  res.status(200).json({ status: 'healthy', service: 'KhetiSe API' });
 });
 
 export default router;

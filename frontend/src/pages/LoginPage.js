@@ -46,7 +46,7 @@ function LoginPage() {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
             <Leaf className="w-12 h-12 text-primary" />
-            <span className="text-3xl font-semibold tracking-tight">GroFresh</span>
+            <span className="text-3xl font-semibold tracking-tight">KhetiSe</span>
           </Link>
           <h2 className="text-2xl font-semibold tracking-tight mb-2">Welcome back</h2>
           <p className="text-muted-foreground">Sign in to your account to continue</p>

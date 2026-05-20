@@ -1,5 +1,5 @@
 """
-Seed script to add initial products to GroFresh
+Seed script to add initial products to KhetiSe
 """
 import os
 from pymongo import MongoClient
@@ -7,7 +7,7 @@ from datetime import datetime
 
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 client = MongoClient(MONGO_URL)
-db = client['grofresh']
+db = client['khetise']
 
 # Clear existing data
 db.products.delete_many({})

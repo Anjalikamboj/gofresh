@@ -14,7 +14,7 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV ?? 'development',
   PORT: parseInt(process.env.PORT ?? '4000', 10),
   MONGO_URL: requireEnv('MONGO_URL', 'mongodb://localhost:27017/'),
-  MONGO_DB_NAME: requireEnv('MONGO_DB_NAME', 'grofresh'),
+  MONGO_DB_NAME: requireEnv('MONGO_DB_NAME', 'khetise'),
   JWT_SECRET_KEY: requireEnv(
     'JWT_SECRET_KEY',
     'your-secret-key-change-in-production-09876543210',

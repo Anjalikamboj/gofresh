@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timedelta
 import time
 
-class GroFreshAPITester:
+class KhetiSeAPITester:
     def __init__(self, base_url="https://fresh-sub-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
@@ -264,10 +264,10 @@ class GroFreshAPITester:
                 pass
 
 def main():
-    print("🚀 Starting GroFresh API Tests")
+    print("🚀 Starting KhetiSe API Tests")
     print("=" * 50)
     
-    tester = GroFreshAPITester()
+    tester = KhetiSeAPITester()
     
     # Test sequence
     tests = [
