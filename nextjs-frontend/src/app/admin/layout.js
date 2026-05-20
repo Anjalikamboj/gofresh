@@ -52,8 +52,8 @@ export default function AdminLayout({ children }) {
           sidebarOpen ? 'w-64' : 'w-20'
         }`}
       >
-        <div className="h-14 flex items-center justify-between px-4 border-b border-border">
-          {sidebarOpen && <h2 className="text-lg font-semibold">Admin Panel</h2>}
+        <div className={`h-14 flex items-center ${sidebarOpen ? 'justify-between' : 'justify-center'} px-4 border-b border-border`}>
+          {sidebarOpen && <h2 className="text-lg font-semibold whitespace-nowrap">Admin Panel</h2>}
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-2 rounded-lg hover:bg-secondary transition-colors"
@@ -77,7 +77,7 @@ export default function AdminLayout({ children }) {
                   active
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-                }`}
+                } ${!sidebarOpen && 'justify-center'}`}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />
                 {sidebarOpen && <span className="font-medium">{item.label}</span>}
