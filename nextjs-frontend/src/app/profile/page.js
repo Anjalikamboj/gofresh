@@ -106,7 +106,7 @@ export default function ProfilePage() {
 
   if (authLoading || !user) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <div className="text-center py-12">
           <p className="text-muted-foreground">Loading profile...</p>
         </div>
@@ -115,7 +115,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <button
         onClick={() => router.push('/')}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"

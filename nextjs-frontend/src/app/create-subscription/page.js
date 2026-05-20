@@ -77,14 +77,14 @@ export default function CreateSubscriptionPage() {
 
   if (authLoading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <div className="bg-card rounded-2xl border border-border p-6 animate-pulse h-64"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <button
         onClick={() => router.push('/')}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"

@@ -36,7 +36,7 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <div key={i} className="product-card animate-pulse">
@@ -52,7 +52,7 @@ export default function ProductsPage() {
 
   if (error) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-6 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-destructive" />
           <p className="text-destructive">{error}</p>
@@ -62,7 +62,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Hero Section */}
       <div className="hero-gradient rounded-3xl p-8 sm:p-12 mb-12 noise-overlay">
         <div className="max-w-3xl">

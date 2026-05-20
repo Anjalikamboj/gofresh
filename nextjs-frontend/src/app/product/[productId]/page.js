@@ -63,7 +63,7 @@ export default function ProductDetailPage() {
 
   if (error || !product) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-6">
           <p className="text-destructive">{error || 'Product not found'}</p>
           <button onClick={() => router.push('/')} className="mt-4 text-primary hover:underline">
@@ -78,7 +78,7 @@ export default function ProductDetailPage() {
   const images = product.images && product.images.length > 0 ? product.images : [product.image_url];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <button
         onClick={() => router.push('/')}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"

@@ -65,7 +65,7 @@ export default function OrdersPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="bg-card rounded-2xl border border-border p-6 animate-pulse">
@@ -79,7 +79,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <h1 className="text-3xl font-semibold tracking-tight mb-6">Orders</h1>
 
       {error && (

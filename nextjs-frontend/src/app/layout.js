@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <div className="min-h-screen bg-background">
             <Navigation />
-            <main className="py-8">{children}</main>
+            <main>{children}</main>
           </div>
         </AuthProvider>
       </body>
