@@ -9,10 +9,10 @@ const app: Application = express();
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(helmet());
 
-// ── CORS (mirrors Python: allow_origins=["*"]) ────────────────────────────────
+// ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: '*',
+    origin: ['http://localhost:3000', 'https://khetise.onrender.com'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['*'],
