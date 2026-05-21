@@ -36,7 +36,7 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="border-b border-border bg-card">
+    <nav className="sticky top-0 z-50 border-b border-border bg-card">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2" data-testid="logo-link">
