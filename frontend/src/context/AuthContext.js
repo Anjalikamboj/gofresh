@@ -1,6 +1,8 @@
+'use client';
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const AuthContext = createContext(null);
 
@@ -14,31 +16,36 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user on mount if token exists
+  // Initialize token from localStorage on mount (client-side only)
   useEffect(() => {
-    if (token) {
-      loadUser();
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (stored) {
+      setToken(stored);
+      loadUser(stored);
     } else {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadUser = async () => {
+  const loadUser = async (tkn) => {
+    const activeToken = tkn ?? token;
+    if (!activeToken) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await fetch(`${BACKEND_URL}/api/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${activeToken}` },
       });
 
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
       } else {
-        // Token invalid, clear it
         localStorage.removeItem('token');
         setToken(null);
         setUser(null);
@@ -56,14 +63,12 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(data.detail || 'Login failed');
     }
@@ -77,18 +82,12 @@ export const AuthProvider = ({ children }) => {
   const register = async (fullName, email, password) => {
     const response = await fetch(`${BACKEND_URL}/api/auth/register`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        full_name: fullName,
-        email,
-        password
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ full_name: fullName, email, password }),
     });
 
     const data = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(data.detail || 'Registration failed');
     }
@@ -114,7 +113,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     loadUser,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin'
+    isAdmin: user?.role === 'admin',
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
